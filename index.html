@@ -3,389 +3,254 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Podcast: Introducción a ISSABEL</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <title>Playlist - Webinars Aniversario 30</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ===== Paleta y base ===== */
     :root{
-      --bg:#004E94;           /* Fondo global */
-      --card:#ffffff;         /* Superficie de tarjeta */
-      --text:#000000;         /* Texto principal */
-      --muted:#6b7280;        /* Texto secundario */
-      --accent:#004E94;       /* Botones/activos */
-      --accent-hover:#0060b8; /* Hover */
-      --border:#e5e7eb;       /* Bordes claros */
-      --chip:#eff6ff;         /* Suave para resaltes */
-
-      --btn-size:76px;        /* tamaño de botones (desktop) */
+      --bg:#004E94;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --accent:#004E94;
+      --accent-hover:#0060b8;
+      --border:#e5e7eb;
+      --btn-size:72px;
     }
-
-    html,body{height:100%}
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
       font-family:'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Inter, Arial, sans-serif;
       background:var(--bg);
       color:var(--text);
     }
-    html{ font-size: clamp(15px, 1.5vw, 16px); }
-
-    .wrap{max-width:600px;margin:0 auto;padding:24px}
-
-    /* ===== Header simple ===== */
-    .top{
-      color:#fff;
-      text-align:center;
-      margin-bottom:12px;
+    .app{max-width:1000px;margin:0 auto;padding:20px}
+    .title{color:#fff;margin:0 0 14px 0;font-weight:700;letter-spacing:.2px}
+    .grid{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:16px;
+      align-items:stretch;
     }
-    .top h1{
-      margin:0 0 4px 0;
-      font-size:24px;
-      font-weight:700;
-      letter-spacing:.2px;
+    @media (max-width:900px){
+      .grid{ grid-template-columns: 1fr; }
+	#listPanel { order: 2; }
+	.player    { order: 1; }
     }
-    .status{
-      display:inline-block;
-      font-size:12px;
-      color:#e5eefb;
-      opacity:.95;
-    }
-
-    /* ===== Tarjeta con flip ===== */
-    .flip-card{
-      background-color:transparent;
-      width:100%;
-      perspective:1000px;
-    }
-    .flip-card-inner{
-      position:relative;
-      width:100%;
-      /* La altura se fijará por JS con el mayor scrollHeight de las caras */
-      transition:transform .8s;
-      transform-style:preserve-3d;
-      border-radius:16px;
+    .panel{
+      background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;
       box-shadow:0 10px 30px rgba(0,0,0,.25);
     }
-    .flip-card.flipped .flip-card-inner{
-      transform:rotateY(180deg);
-    }
-    .face{
-      position:absolute;
-      inset:0;
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:20px 20px 28px; /* fondo extra para el FAB */
-      backface-visibility:hidden;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:flex-start;
-      overflow:hidden; /* evita que corte contenido */
-    }
-    .front{ z-index:2; }
-    .back{ transform:rotateY(180deg);
-overflow: hidden; }
 
-    /* ===== Portada ===== */
+    /* LISTA dentro del panel, con padding e inset de scrollbar */
+    #listPanel{ display:flex; }
+    .list{
+      display:flex;flex-direction:column;
+      padding:8px 12px 8px 8px;   /* INSET para que el scroll no toque el borde */
+      background:#fff;
+      overflow:auto;
+      overscroll-behavior:contain;
+      height:100%;
+      scrollbar-gutter: stable both-edges; /* reserva espacio para la barra y mantiene borde redondeado */
+      background-clip: padding-box;
+    }
+    .item{
+      display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:10px;
+      padding:10px 12px;border-bottom:1px solid #f3f4f6;cursor:pointer;background:#fff;
+      text-align:left;margin:0;border:0;box-shadow:none;appearance:none;-webkit-appearance:none;outline:none;width:100%;
+      border-radius:10px;
+    }
+    .item + .item{ margin-top:6px; } /* separa un poco los items */
+    .item:last-child{border-bottom:none}
+    button.item::-moz-focus-inner{ border:0; padding:0; }
+    .item:focus{ outline:none; }
+    .item:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+    .thumb{width:60px;height:60px;border-radius:10px;object-fit:cover;border:1px solid #eef2f7}
+    .name{font-size:14px;font-weight:600;}
+    .desc{font-size:12px;color:var(--muted)}
+    .dur{font-size:12px;color:var(--muted)}
+    .item.active{background:#f7fbff}
+    .item:hover{background:#f3f8ff}
+
+    /* Scrollbar styling (WebKit) para dar “aire” al borde derecho */
+    .list::-webkit-scrollbar{ width:12px; }
+    .list::-webkit-scrollbar-track{ background:transparent; }
+    .list::-webkit-scrollbar-thumb{
+      background:#cfd8e3; border-radius:10px; border:3px solid #fff; /* borde blanco crea espacio/acolchonado */
+    }
+    /* Firefox */
+    .list{ scrollbar-width: thin; scrollbar-color: #cfd8e3 transparent; }
+
+    /* PLAYER */
+    .player{padding:18px;display:flex;flex-direction:column;align-items:center}
     .cover{
-      width:min(320px, 92%);
-      aspect-ratio:1/1;
-      object-fit:cover;
-      border-radius:12px;
-      box-shadow:0 8px 20px rgba(0,0,0,.15);
-      margin:8px 0 14px 0;
+      width:min(360px, 92%);aspect-ratio:1/1;object-fit:cover;border-radius:12px;
+      box-shadow:0 8px 20px rgba(0,0,0,.15);border:1px solid #eef2f7;margin-bottom:12px;
     }
+    .h2{margin:6px 0 2px 0;font-size:18px;font-weight:700;text-align:center}
+    .status{font-size:12px;color:#6ea8ff;margin-bottom:6px}
+    /* Mismo ancho que la portada y todo centrado */
+.timeline{
+  width: min(360px, 92%);     /* igual que .cover */
+  display:flex;
+  flex-direction: column;     
+  align-items:center;         /* centra ambos */
+  gap:6px;
+  margin:6px 0 12px;
+}
+.time{
+  font-size:14px;
+  color:var(--muted);
+  text-align:center;
+  min-width:0;                /* quita el ancho mínimo para centrar perfecto */
+}
 
-    /* ===== Controles personalizados ===== */
+/* La barra ocupa ese mismo ancho */
+input[type="range"]{
+  accent-color: var(--accent);
+  width:100%;
+}
+
     .controls{display:flex;gap:16px;align-items:center;justify-content:center}
-    .controls-bottom{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:10px}
-
     .btn{
       appearance:none;border:0;background:transparent;cursor:pointer;
-      padding:0;border-radius:14px;outline-offset:4px;
-      width:var(--btn-size);height:var(--btn-size);
-      transition:transform .08s ease, filter .15s ease;
-      display:inline-grid;place-items:center;
+      padding:0;border-radius:14px;outline-offset:4px;width:var(--btn-size);height:var(--btn-size);
+      transition:transform .08s ease, filter .15s ease;display:inline-grid;place-items:center;
     }
     .btn:focus-visible{outline:2px solid var(--accent)}
     .btn:hover{transform:translateY(-1px);filter:drop-shadow(0 4px 10px rgba(0,0,0,.15))}
-    .btn svg, .btn img{width:100%;height:100%;display:block}
+    .btn svg{width:100%;height:100%}
 
-    .meta{
-      font-size:20px;
-      color:var(--muted);
-      text-align:center;
-      margin:6px 0 10px;
+    @media (min-width:901px){
+      #listPanel{ max-height: 80vh; } /* fallback, JS lo sincroniza con el alto del player */
     }
+.title{ display:none !important; }
 
-    /* Toggle autodesplazamiento */
-    .toggle{
-      display:inline-flex;gap:8px;align-items:center;
-      background:#f3f4f6;border:1px solid var(--border);border-radius:12px;
-      padding:8px 12px;font-weight:600;color:#111827;
-    }
-    .toggle input{accent-color:var(--accent)}
-
-    /* Botón para girar tarjeta */
-    .btnFlip{
-      background:var(--accent);color:#fff;border:0;border-radius:10px;
-      padding:10px 14px;font-weight:700;cursor:pointer;
-      transition:background .15s ease, transform .08s ease;
-    }
-    .btnFlip:hover{background:var(--accent-hover)}
-    .btnFlip:active{transform:translateY(1px)}
-    .btnFlip:focus-visible{outline:2px solid #fff;outline-offset:2px}
-
-   
-
-    /* ===== Transcripción ===== */
-    .transcript-wrap{
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:stretch;
-      gap:10px;
-      height:100%;
-    }
-    .transcript-head{
-      display:flex;justify-content:space-between;align-items:center;
-      gap:8px;margin-bottom:2px;width:100%;max-width:760px;margin-inline:auto;
-    }
-    .transcript-title{
-      font-weight:700;font-size:18px;margin:0;color:#111827;
-    }
-    .transcript{
-      flex:1 1 auto;
-      max-height:100%;
-      overflow:auto;
-scrollbar-gutter: stable;
-      padding:10px 16px 16px;
-      scroll-behavior:smooth;
-      border:1px solid var(--border);
-      border-radius:12px;
-      background:#fff;
-      width:100%;max-width:760px;margin-inline:auto;
-    }
-    .line{
-      padding:8px 10px;border-radius:10px;margin:4px 0;line-height:1.5;border:1px solid transparent;
-    }
-    .line .time{
-      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-      font-size:14px;color:var(--muted);margin-right:8px
-    }
-    .line.active{
-      background:linear-gradient(90deg, rgba(0,78,148,.12), rgba(0,78,148,.04));
-      border-color:#b3cbe1
-    }
-    .line.active .time{ color:#5aa0db }
-    .line:focus{ outline:2px solid var(--accent); outline-offset:2px }
-    .line span:not(.time){
-      display:inline-block; text-align:justify; width:100%;
-    }
-
-    /* ===== Responsivo ===== */
-    @media (max-width:900px){
-      :root{ --btn-size:64px; }
-      .wrap{ padding:16px; }
-      .top h1{ font-size:20px; }
-      .meta{ font-size:18px; }
-    }
-    @media (max-width:480px){
-      :root{ --btn-size:56px; }
-      .wrap{ padding:12px; }
-      .top h1{ font-size:18px; }
-      .meta{ font-size:16px; }
-      .btnFlip-fab{ bottom:10px; }
-    }
-    @media (prefers-reduced-motion: reduce){
-      *{ scroll-behavior:auto !important; transition:none !important; }
-    }
-
-.front-head{
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
-  gap:8px;
-  width:100%;
-  max-width:760px;
-  margin-inline:auto;
-  margin-bottom:10px;
-}
 
 
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top" role="banner">
-      <h1>Podcast: Introducción a ISSABEL</h1>
-      <span class="status" id="status">Sin iniciar</span>
-    </div>
+  <div class="app">
+    <h1 class="title">Podcast – Selecciona un episodio</h1>
+    <div class="grid">
+      <!-- Lista ahora va dentro de un panel separado, con padding -->
+      <aside class="panel" id="listPanel" aria-label="Lista de episodios">
+        <div class="list" id="episodeList"></div>
+      </aside>
 
-    <div class="flip-card" id="flipCard" role="application" aria-label="Tarjeta de podcast con transcripción al reverso">
-      <div class="flip-card-inner">
-        <!-- ===== Cara frontal: portada + controles ===== -->
-        <section class="face front" aria-label="Reproductor">
-<div class="front-head">
-  <button class="btnFlip" type="button" aria-label="Ver transcripción">
-    Ver transcripción
-  </button>
+      <!-- Reproductor -->
+      <section class="panel player" aria-label="Reproductor">
+        <img id="cover" class="cover" src="Introduccion_a_ISSABEL.png" alt="Portada">
+        <div class="h2" id="epTitle">–</div>
+        <div class="status" id="status">Sin iniciar</div>
+        <audio id="player" preload="auto" aria-label="Reproductor de audio"></audio>
+
+<div class="timeline">
+  <span id="time" class="time" aria-live="polite">00:00 / 00:00</span>
+  <input type="range" id="progress" value="0" min="0" step="1" aria-label="Barra de progreso">
 </div>
 
-          <img src="Introduccion_a_ISSABEL.png" alt="Portada del podcast" class="cover"/>
 
-          <audio id="player" src="Introduccion_a_ISSABEL.mp3" preload="auto" aria-label="Reproductor de audio"></audio>
-
-          <div class="meta" id="meta" aria-live="polite">00:00 / 00:00</div>
-
-          <div class="controls" role="group" aria-label="Controles de reproducción">
-            <!-- Retroceder 10s -->
-            <button id="btnBack" class="btn" aria-label="Retroceder 10 segundos">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
-                <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#0060b8"/><stop offset="1" stop-color="#004E94"/></linearGradient></defs>
-                <circle cx="38" cy="38" r="34" fill="url(#g)"/>
-                <path d="M45 27v22l-16-11z" fill="#fff" opacity=".95"/>
-                <path d="M33 27v22l-16-11z" fill="#fff" opacity=".95"/>
-              </svg>
-            </button>
-
-            <!-- Play/Pausa (el ícono se cambia por JS) -->
-            <button id="btnPlay" class="btn" aria-label="Reproducir o Pausar"></button>
-
-            <!-- Avanzar 10s -->
-            <button id="btnFwd" class="btn" aria-label="Avanzar 10 segundos">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
-                <defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#0060b8"/><stop offset="1" stop-color="#004E94"/></linearGradient></defs>
-                <circle cx="38" cy="38" r="34" fill="url(#g3)"/>
-                <path d="M31 27v22l16-11z" fill="#fff" opacity=".95"/>
-                <path d="M43 27v22l16-11z" fill="#fff" opacity=".95"/>
-              </svg>
-            </button>
-          </div>
-
-          
-        </section>
-
-        <!-- ===== Cara trasera: transcripción ===== -->
-        <section class="face back" aria-label="Transcripción">
-          <div class="transcript-wrap">
-            <div class="transcript-head">
-  <h2 class="transcript-title"></h2>
-  <div style="display:flex;gap:10px;align-items:center;">
-    <button class="btnFlip" type="button" aria-label="Volver al reproductor">Volver</button>
-    <label class="toggle">
-      <input id="chkAutoscroll" type="checkbox" checked /> Autodesplazar
-    </label>
-  </div>
-</div>
-
-            <div class="transcript" id="transcript" aria-live="polite" aria-label="Transcripción sincronizada"></div>
-          </div>
-
-          <!-- FAB opcional también atrás:
-          <button class="btnFlip btnFlip-fab" type="button" aria-label="Volver al reproductor">Volver</button>
-          -->
-        </section>
-      </div>
+        <div class="controls">
+          <button id="btnBack" class="btn" aria-label="Retroceder 10 segundos">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+              <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0060b8"/><stop offset="1" stop-color="#004E94"/></linearGradient></defs>
+              <circle cx="38" cy="38" r="34" fill="url(#g)"/>
+              <path d="M45 27v22l-16-11z" fill="#fff" opacity=".95"/>
+              <path d="M33 27v22l-16-11z" fill="#fff" opacity=".95"/>
+            </svg>
+          </button>
+          <button id="btnPlay" class="btn" aria-label="Reproducir o Pausar"></button>
+          <button id="btnFwd" class="btn" aria-label="Avanzar 10 segundos">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+              <defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0060b8"/><stop offset="1" stop-color="#004E94"/></linearGradient></defs>
+              <circle cx="38" cy="38" r="34" fill="url(#g3)"/>
+              <path d="M31 27v22l16-11z" fill="#fff" opacity=".95"/>
+              <path d="M43 27v22l16-11z" fill="#fff" opacity=".95"/>
+            </svg>G
+          </button>
+        </div>
+      </section>
     </div>
   </div>
 
   <script>
-    /* ===== Datos de cues (sincronía) ===== */
-    const cuesData = [
-      { start: 3,   end: 8,   text: "En un Centro de Atención de Llamadas de Emergencia, todo comienza con una llamada." },
-      { start: 8,   end: 18,  text: "Para que esa llamada llegue de manera ordenada y pueda registrarse en el sistema <strong>CAD Saimon</strong>, existe <strong>ISSABEL</strong>, la solución que administra la telefonía y conecta al ciudadano con el operador." },
-      { start: 18,  end: 26,  text: "<strong>ISSABEL</strong> es el módulo que recibe las llamadas, permite contestarlas, transferirlas, ponerlas en espera o unirlas en conferencia." },
-      { start: 26,  end: 35,  text: "Al estar conectado con el <strong>CAD Saimon</strong>, cada llamada queda ligada de inmediato a un folio de incidente, lo que asegura un registro completo para dar seguimiento oportuno." },
-      { start: 35,  end: 42,  text: "<strong>En pocas palabras:</strong> ISSABEL gestiona la llamada y el CAD organiza la emergencia, integrando más recursos para la atención." },
-      { start: 42,  end: 50,  text: "Ambos trabajan juntos para que el operador pueda enfocarse en lo más importante: escuchar al ciudadano, responder con rapidez y no perder información en el proceso." },
-      { start: 50,  end: 61,  text: "Dentro del sistema CAD Saimon, ISSABEL tiene la capacidad de integrar varios servicios de comunicación. Sin embargo, para el trabajo del operador destacan dos componentes esenciales:" },
-      { start: 61,  end: 80,  text: "<ul><li><strong>El PBX IP</strong>, que es el corazón de la telefonía. Administra las llamadas entrantes y salientes, organiza las extensiones de los operadores y gestiona las colas de atención. Gracias a él es posible contestar, transferir, poner en espera y realizar conferencias, asegurando que cada comunicación llegue a su destino correcto.</li></ul>" },
-      { start: 80,  end: 92,  text: "<ul><li><strong>La grabación de llamadas</strong>, que conserva un respaldo de todas las interacciones. Estas grabaciones sirven como evidencia en caso de requerirse por alguna autoridad y garantizan control, seguridad y seguimiento de cada reporte.</li></ul>" },
-      { start: 92,  end: 102, text: "En el contexto operativo, ISSABEL permite que la comunicación sea continua, que las llamadas se asignen de forma ordenada y que exista un control confiable de cada interacción." },
-      { start: 102, end: 111, text: "De esta manera, el sistema respalda al operador en su labor diaria, reduciendo el riesgo de pérdida de información y facilitando la coordinación con otras corporaciones." },
-      { start: 111, end: 121, text: "¡Muy bien! Con esto ya tienes una visión más amplia de qué es ISSABEL, cómo se conecta con el CAD Saimon y cuáles son los componentes que realmente fortalecen tu labor como operador." },
-      { start: 121, end: 9999, text: "En la siguiente lección profundizaremos en los conceptos básicos de telefonía, indispensables para comprender el funcionamiento del sistema en cada llamada." }
-    ];
+    // ===== Lista de los items =====
+const EPISODES = [
+  { title: "Drones",  src: "DRONES_WEBINAR_VFINAL_AUDIO.mp3", cover: "1.png",  desc:"Impartidor del webinar 1 - Área de Desarrollo TIG" },
+  { title: "SAIMOINTECH",  src: "SAIMONTECH_WEBINAR_FINAL_AUDIO.mp3", cover: "2.png",  desc:"Impartidor del webinar 2" },
+  { title: "IA y Ciberseguridad",  src: "IA_CIBERSEGURIDAD_FINAL_AUDIO.mp3", cover: "3.png",  desc:"Impartidor del webinar 3" },
+  { title: "Proyecto Centinela",  src: "PROYECTO_CENTINELA_FINAL_AUDIO.mp3", cover: "4.png",  desc:"Impartidor del webinar 4" },
+  { title: "Webinar 5",  src: "Introduccion_a_ISSABEL.mp3", cover: "5.png",  desc:"Impartidor del webinar 5" },
+  { title: "Webinar 6",  src: "Introduccion_a_ISSABEL.mp3", cover: "6.png",  desc:"Impartidor del webinar 6" },
+  { title: "Webinar 7",  src: "Introduccion_a_ISSABEL.mp3", cover: "7.png",  desc:"Impartidor del webinar 7" },
+  { title: "Webinar 8",  src: "Introduccion_a_ISSABEL.mp3", cover: "8.png",  desc:"Impartidor del webinar 8" },
+  { title: "Webinar 9",  src: "Introduccion_a_ISSABEL.mp3", cover: "9.png",  desc:"Impartidor del webinar 9" },
+  { title: "Webinar 10", src: "Introduccion_a_ISSABEL.mp3", cover: "10.png", desc:"Impartidor del webinar 10" },
+];
 
-    /* ===== Elementos ===== */
-    const flipCard = document.getElementById('flipCard');
-    const inner = document.querySelector('.flip-card-inner');
-    const transcriptEl = document.getElementById('transcript');
+    // ===== UI & lógica =====
+    const list = document.getElementById('episodeList');
+    const listPanel = document.getElementById('listPanel');
     const player = document.getElementById('player');
-    const status  = document.getElementById('status');
-    const meta    = document.getElementById('meta');
+    const cover  = document.getElementById('cover');
+    const status = document.getElementById('status');
+    const epTitle= document.getElementById('epTitle');
+    const btnPlay= document.getElementById('btnPlay');
+    const btnBack= document.getElementById('btnBack');
+    const btnFwd = document.getElementById('btnFwd');
+    const progress = document.getElementById('progress');
+    const timeEl   = document.getElementById('time');
 
-    let activeIndex = -1;
-    let autoScroll = true;
+    let currentIndex = 0;
+    let scrubbing = false;
 
-    // Construir transcripción
-    cuesData.forEach((cue, i)=>{
-      const line = document.createElement('div');
-      line.className = 'line';
-      line.dataset.index = i;
-      line.dataset.start = cue.start;
-      line.dataset.end = cue.end;
-
-      const t = document.createElement('span');
-      t.className = 'time';
-      t.textContent = formatTime(cue.start);
-
-      const text = document.createElement('span');
-      text.innerHTML = cue.text;
-
-      line.appendChild(t);
-      line.appendChild(text);
-      line.tabIndex = 0;
-      line.setAttribute('role','button');
-      line.setAttribute('aria-label', `Saltar a ${formatTime(cue.start)}`);
-      line.addEventListener('click', ()=>{ player.currentTime = cue.start + 0.01; player.play(); });
-
-      transcriptEl.appendChild(line);
-    });
-
-    // Botones
-    const btnPlay = document.getElementById('btnPlay');
-    const btnBack = document.getElementById('btnBack');
-    const btnFwd  = document.getElementById('btnFwd');
-
-    // Toggle Autodesplazar
-    document.getElementById('chkAutoscroll').addEventListener('change', (e)=> autoScroll = e.target.checked);
-
-    // Flip (todos los botones con clase .btnFlip)
-    document.querySelectorAll('.btnFlip').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        flipCard.classList.toggle('flipped');
-        // Recalcular altura tras el giro (por si cambia el contenido visible)
-        setTimeout(syncCardHeight, 0);
+    function renderList() {
+      list.innerHTML = '';
+      EPISODES.forEach((ep, i) => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'item' + (i === currentIndex ? ' active' : '');
+        item.setAttribute('aria-label', 'Reproducir ' + ep.title);
+        item.innerHTML = `
+          <img class="thumb" src="${ep.cover}" alt="Portada">
+          <div>
+            <div class="name">${ep.title}</div>
+            <div class="desc">${ep.desc||''}</div>
+          </div>
+          <div class="dur"></div>
+        `;
+        item.addEventListener('click', () => loadEpisode(i, true));
+        list.appendChild(item);
       });
-    });
+    }
 
-    // Atajos de teclado para voltear
-    window.addEventListener('keydown', (e)=>{
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      if (['f','t'].includes(e.key.toLowerCase())){
-        flipCard.classList.toggle('flipped');
-        setTimeout(syncCardHeight, 0);
+    function loadEpisode(i, autoplay=false) {
+      currentIndex = i;
+      [...list.children].forEach((c, idx) => c.classList.toggle('active', idx===i));
+      const ep = EPISODES[i];
+      cover.src = ep.cover;
+      cover.alt = 'Portada – ' + ep.title;
+      epTitle.textContent = ep.title;
+      player.src = ep.src;
+      status.textContent = 'Listo';
+      setPlayIcon();
+      progress.value = 0;
+      timeEl.textContent = '00:00 / 00:00';
+      if (autoplay) {
+        const p = player.play();
+        if (p && typeof p.catch === 'function') p.catch(()=>{});
       }
-    });
+      syncListHeight();
+    }
 
-    // Doble clic en la tarjeta también voltea
-    inner.addEventListener('dblclick', ()=>{
-      flipCard.classList.toggle('flipped');
-      setTimeout(syncCardHeight, 0);
-    });
-
-    // Handlers reproducción
+    // Controles
     btnPlay.addEventListener('click', ()=> player.paused ? player.play() : player.pause());
     btnBack.addEventListener('click', ()=> player.currentTime = Math.max(0, player.currentTime-10));
     btnFwd .addEventListener('click', ()=> player.currentTime = Math.min(player.duration||1, player.currentTime+10));
 
-    // Atajos de reproducción
+    // Atajos de teclado
     window.addEventListener('keydown', (e)=>{
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.code === 'Space' || e.key.toLowerCase() === 'k') { e.preventDefault(); player.paused ? player.play() : player.pause(); }
@@ -393,35 +258,48 @@ scrollbar-gutter: stable;
       if (e.key.toLowerCase() === 'l') { player.currentTime = Math.min(player.duration||1, player.currentTime+10); }
     });
 
-    // Eventos del reproductor
+    // Timeline y tiempo
     player.addEventListener('loadedmetadata', ()=>{
-      meta.textContent = `${formatTime(0)} / ${formatTime(player.duration||0)}`;
-      status.textContent = 'Listo';
-      // Ajusta altura una vez que sabemos el alto de portada/meta
-      syncCardHeight();
+      const dur = Math.floor(player.duration || 0);
+      progress.max = dur > 0 ? dur : 0;
+      progress.value = 0;
+      timeEl.textContent = `${formatTime(0)} / ${formatTime(dur)}`;
+      syncListHeight();
     });
-
+    player.addEventListener('durationchange', ()=>{
+      const dur = Math.floor(player.duration || 0);
+      if (dur > 0) {
+        progress.max = dur;
+        timeEl.textContent = `${formatTime(Math.floor(player.currentTime||0))} / ${formatTime(dur)}`;
+      }
+      syncListHeight();
+    });
     player.addEventListener('timeupdate', ()=>{
-      meta.textContent = `${formatTime(player.currentTime)} / ${formatTime(player.duration||0)}`;
-      highlightFor(player.currentTime);
+      const cur = Math.floor(player.currentTime || 0);
+      const dur = Math.floor(player.duration || 0);
+      if (!scrubbing) progress.value = cur;
+      timeEl.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
     });
 
-    player.addEventListener('play', ()=>{
-      status.textContent = 'Reproduciendo';
-      setPauseIcon();
+    progress.addEventListener('pointerdown', ()=>{ scrubbing = true; });
+    window.addEventListener('pointerup', ()=>{ scrubbing = false; });
+    progress.addEventListener('input', ()=>{
+      player.currentTime = progress.value;
+      const cur = Math.floor(progress.value);
+      const dur = Math.floor(player.duration || 0);
+      timeEl.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
     });
 
-    player.addEventListener('pause', ()=>{
-      status.textContent = 'En pausa';
-      setPlayIcon();
-    });
-
+    // Estados del reproductor
+    player.addEventListener('play',  ()=>{ status.textContent = 'Reproduciendo'; setPauseIcon(); });
+    player.addEventListener('pause', ()=>{ status.textContent = 'En pausa';     setPlayIcon();  });
     player.addEventListener('ended', ()=>{
       status.textContent = 'Terminado';
       setPlayIcon();
+      if (currentIndex < EPISODES.length - 1) loadEpisode(currentIndex + 1, true);
     });
 
-    // Íconos Play/Pausa (SVG)
+    // Íconos
     function setPauseIcon(){
       btnPlay.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
@@ -446,46 +324,32 @@ scrollbar-gutter: stable;
         </svg>`;
     }
 
-    // Resaltado y autoscroll
-    function highlightFor(t){
-      let idx = cuesData.findIndex(c=> t>=c.start && t<c.end);
-      if (idx === -1 && t >= (cuesData[cuesData.length-1]?.end||Infinity)) idx = cuesData.length-1;
-      if (idx !== activeIndex){
-        const prev = transcriptEl.querySelector('.line.active');
-        if (prev) prev.classList.remove('active');
-        const next = transcriptEl.querySelector(`.line[data-index="${idx}"]`);
-        if (next){
-          next.classList.add('active');
-          if (autoScroll) next.scrollIntoView({behavior:'smooth', block:'center'});
-        }
-        activeIndex = idx;
-      }
-    }
-
     function formatTime(s){
       if (!Number.isFinite(s)) return '00:00';
       const m = Math.floor(s/60); const ss = Math.floor(s%60);
       return `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
     }
 
-    /* ===== Altura dinámica: toma la mayor de ambas caras ===== */
-    function syncCardHeight(){
-      const faces = Array.from(document.querySelectorAll('.face'));
-      // Limpio altura para medir correctamente
-      inner.style.height = '';
-      const maxH = Math.max(...faces.map(f => f.scrollHeight));
-      inner.style.height = maxH + 'px';
+    // === Sincroniza altura de panel de lista con el panel del reproductor ===
+    const playerPanel = document.querySelector('.panel.player');
+    function syncListHeight(){
+      const twoCol = window.matchMedia('(min-width: 901px)').matches;
+      if (!twoCol) { listPanel.style.maxHeight = ''; return; }
+      const h = playerPanel.getBoundingClientRect().height;
+      if (h > 0) listPanel.style.maxHeight = h + 'px';
     }
+    window.addEventListener('load', syncListHeight);
+    document.addEventListener('DOMContentLoaded', syncListHeight);
+    window.addEventListener('resize', syncListHeight);
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver(() => syncListHeight());
+      ro.observe(playerPanel);
+    }
+    requestAnimationFrame(syncListHeight);
 
-
-    // Recalcular al redimensionar ventana
-    window.addEventListener('resize', syncCardHeight);
-
-    // Icono inicial
-    setPlayIcon();
-
-    // Por si el audio tarda en cargar, asegura un primer cálculo
-    window.addEventListener('load', syncCardHeight);
+    // Inicializar
+    renderList();
+    loadEpisode(0, false);
   </script>
 </body>
 </html>
